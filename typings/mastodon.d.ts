@@ -6,10 +6,13 @@ declare module 'mastodon' {
   export default class LastFM {
     constructor(props: MastodonConstructorOptions);
     post(
-      path: 'statuses/update',
+      path: 'statuses',
       params: {
         status: string;
         media_ids?: string[];
+        sensitive?: boolean;
+        spoiler_text?: string;
+        visibility: 'public' | 'unlisted' | 'private' | 'direct';
       },
     ): Promise<{
       data: Record<string, string>;
