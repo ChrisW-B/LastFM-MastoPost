@@ -1,4 +1,4 @@
-# Last.fm Mastodon Poster by Chris Barry
+# Last.fm Mastodon Poster
 
 Very simple node.js app that queries Last.FM for a user's top artists and posts them in the form
 
