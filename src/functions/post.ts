@@ -78,7 +78,12 @@ class Poster {
       console.info(status);
       return;
     }
-    return this.mastodonClient.post('statuses', { status });
+    return this.mastodonClient.post('statuses', {
+      status,
+      visibility: 'unlisted',
+      sensitive: true,
+      spoiler_text: 'Last.FM weekly autopost',
+    });
   };
 
   private setupPost = async (
@@ -92,7 +97,7 @@ class Poster {
 
 (via `; // include the via because we need to count it
 
-    if (postString.length + urlLength + 1 <= 280) {
+    if (postString.length + urlLength + 1 <= 500) {
       try {
         await this.postStatus(`${postString}https://last.fm/user/${this.username})`);
         console.info(`Successfully Posted!

@@ -1,5 +1,3 @@
-
-
 declare module 'lastfm-njs' {
   interface LastFMConstructorOptions {
     apiKey: string;
