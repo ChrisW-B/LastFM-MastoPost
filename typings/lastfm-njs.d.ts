@@ -1,9 +1,10 @@
-interface ConstructorOptions {
-  apiKey: string;
-  apiSecret: string;
-}
+
 
 declare module 'lastfm-njs' {
+  interface LastFMConstructorOptions {
+    apiKey: string;
+    apiSecret: string;
+  }
   export type LastFmTimePeriod = 'overall' | '7day' | '1month' | '3month' | '6month' | '12month';
   export type LastFmImageSize = 'small' | 'medium' | 'large' | 'extralarge' | 'mega';
   export interface LastFmImage {
@@ -21,7 +22,7 @@ declare module 'lastfm-njs' {
   }
 
   export default class LastFM {
-    constructor(props: ConstructorOptions);
+    constructor(props: LastFMConstructorOptions);
     user_getTopArtists(data: { user: string; limit: number; period: LastFmTimePeriod }): Promise<{
       artist: LastFmArtist[];
     }>;

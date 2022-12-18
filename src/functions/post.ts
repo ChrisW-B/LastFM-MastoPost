@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import Lastfm, { LastFmArtist, LastFmTimePeriod } from 'lastfm-njs';
-import Twitter from 'twitter-lite';
+import Mastodon from 'mastodon';
 
 dotenv.config();
 
@@ -45,27 +45,25 @@ const createArtistString = (topArtists: LastFmArtist[]): string =>
     '',
   );
 
-interface RequiredProps {
+type RequiredProps = {
   username: string;
   lastFM: {
     apiKey: string;
     apiSecret: string;
   };
-  twitter: {
-    consumer_key: string;
-    consumer_secret: string;
-    access_token_key: string;
-    access_token_secret: string;
+  mastodon: {
+    access_token: string;
+    api_url: string;
   };
-}
-class Tweeter {
+};
+class Poster {
   private lastfmClient: Lastfm;
-  private twitterClient: Twitter;
+  private mastodonClient: Mastodon;
   private username: string;
 
   constructor(props: RequiredProps) {
     this.lastfmClient = new Lastfm(props.lastFM);
-    this.twitterClient = new Twitter(props.twitter);
+    this.mastodonClient = new Mastodon(props.mastodon);
     this.username = props.username;
   }
 
@@ -73,43 +71,43 @@ class Tweeter {
   private getTopArtists = (limit: number, period: LastFmTimePeriod) =>
     this.lastfmClient.user_getTopArtists({ user: this.username, limit, period });
 
-  // sends a tweet comprised of 'text'
-  private sendTweet = (text: string) => {
+  // sends a post comprised of 'text'
+  private postStatus = (status: string) => {
     if (process.env['DEBUG']) {
-      console.info('Created Tweet!');
-      console.info(text);
+      console.info('Created Post!');
+      console.info(status);
       return;
     }
-    return this.twitterClient.post('statuses/update', { status: text });
+    return this.mastodonClient.post('statuses', { status });
   };
 
-  private setupTweet = async (
+  private setupPost = async (
     artistArray: LastFmArtist[],
     urlLength: number,
     period: LastFmTimePeriod,
   ) => {
-    const tweetString = `Top artists ${getFriendlyTimePeriod(period)}:${createArtistString(
+    const postString = `Top artists ${getFriendlyTimePeriod(period)}:${createArtistString(
       artistArray,
     )}
-  
-    (via `; // include the via because we need to count it
 
-    if (tweetString.length + urlLength + 1 <= 280) {
+(via `; // include the via because we need to count it
+
+    if (postString.length + urlLength + 1 <= 280) {
       try {
-        await this.sendTweet(`${tweetString}https://last.fm/user/${this.username})`);
-        console.info(`Successfully Tweeted!
-         ${tweetString}https://last.fm/user/${this.username})`);
+        await this.postStatus(`${postString}https://last.fm/user/${this.username})`);
+        console.info(`Successfully Posted!
+         ${postString}https://last.fm/user/${this.username})`);
       } catch (e) {
-        console.warn(`Couldn't tweet ${tweetString}https://last.fm/user/${this.username})`);
+        console.warn(`Couldn't post ${postString}https://last.fm/user/${this.username})`);
         console.warn(e, null, 2);
       }
     } else if (artistArray.length > 1) {
       console.info(
-        `Too long ${tweetString}https://last.fm/user/${this.username})
+        `Too long ${postString}https://last.fm/user/${this.username})
   
         Trying with ${artistArray.length - 1} artists`,
       );
-      await this.setupTweet(artistArray.splice(0, artistArray.length - 1), urlLength, period);
+      await this.setupPost(artistArray.splice(0, artistArray.length - 1), urlLength, period);
     } else {
       console.info(`The top artist, ${createArtistString(artistArray)}, has too long a name`);
     }
@@ -138,7 +136,7 @@ class Tweeter {
       const topArtists = await this.getTopArtists(+numArtists, period as LastFmTimePeriod);
       const urlLength = SHORT_URL_LEN;
       if (urlLength) {
-        await this.setupTweet(topArtists.artist, urlLength, period as LastFmTimePeriod);
+        await this.setupPost(topArtists.artist, urlLength, period as LastFmTimePeriod);
       }
     } catch (e) {
       console.error(e);
@@ -146,4 +144,4 @@ class Tweeter {
   };
 }
 
-export default Tweeter;
+export default Poster;

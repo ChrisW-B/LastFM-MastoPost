@@ -5,20 +5,20 @@
 # uses to deploy your code to your provider of choice
 
 # The `service` block is the name of the service
-service: lastfm-tweeter
+service: lastfm-masto-poster
 
 frameworkVersion: '3'
-useDotenv: false
+# useDotenv: false
 
 # The `provider` block defines where your service will be deployed
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
 
 plugins:
   - serverless-plugin-typescript
 
 # The `functions` block defines what code to deploy
 functions:
-  tweetMostPlayedArtists:
-    handler: handler.tweetMostPlayedArtists
+  postMostPlayedArtists:
+    handler: handler.postMostPlayedArtists
