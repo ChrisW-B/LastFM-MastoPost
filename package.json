@@ -45,7 +45,7 @@
     "import-sort-style-module": "6.0.0",
     "prettier": "3.0.0",
     "prettier-plugin-import-sort": "0.0.7",
-    "prettier-plugin-packagejson": "2.4.4",
+    "prettier-plugin-packagejson": "2.4.5",
     "serverless-plugin-typescript": "2.1.5",
     "typescript": "5.1.6"
   },
